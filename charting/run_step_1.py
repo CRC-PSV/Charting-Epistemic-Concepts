@@ -57,7 +57,12 @@ def step_1_filtering(legacy: bool):
 
 def step_1_docterm(legacy: bool):
     # Load matrix if legacy
+
     # Else make model and all
+    # Tag counts sur les lemmas, filtrer, sortir le vocab
+    # Faire un DocTermModel, filtrer pour vocab
+    # Sortir le df
+
     pass
 
 

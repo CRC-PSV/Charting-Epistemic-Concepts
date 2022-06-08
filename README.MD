@@ -1,27 +1,24 @@
 Scientific Explanation
 ======================
 
-This repository holds all the code built for 
+This repository holds the code 
 
-which is presented in the following publications:
+ presented in the following publications:
 * lien 1
 * lien 2
 
-Detailed steps to reproduce the specific results presented in each of these paper are included. 
 The results presented in these publications were produced from a common set of tools and data.
-
-However, the subject being incredibly rich, both in terms of data and of philosophical inquiry, many questions remain unexplored.
+The subject being incredibly rich, both in terms of data and of philosophical inquiry, many questions remain unexplored.
 The whole toolset is thus made available to anyone interested in pursuing further investigations.
-
-We organised the repository to ensure both the reproducibility of the results presented in each publications, and the availability of the toolset to pursue further investigations.
+Furthermore, detailed steps to reproduce the specific results presented in each of the papers are included. 
 
 The general instructions and specifications can be found below, and the details specific to each of the publications are located their respective directories.
 
+The original dataset can be found [here](.)
 
-lien vers le data
 
-Project Structure
------------------
+Project Structure and Workflow
+------------------------------
 
 We organised the repository to ensure both the reproducibility of the results presented in each publications, and the availability of the toolset to pursue further investigations.
 
@@ -49,25 +46,52 @@ Finally, these analysis tools were designed to be flexible (most of the update m
 and could easily be used with a different corpus.
 
 
+Available Analysis
+------------------
 
-Article 1
----------
+This is an overview of the different analysis tools available. See the documentation within the modules themselves for more details.
 
-Diagram
+#### TagCounts
 
-(shenanigans in step 1, will be small differences in the working corpus and docterm matrix if you run from scratch)
-(can use legacy setting to reproduce)
+Location: `lib/models/tagcounts.py` 
+Class name: `TagCountsModel`
 
-Article 2
----------
+Allows for various in-depth 
+For example, count the frequency of each word across the copus, while also 
 
+#### Docterm
 
-Lib
----
+Location: `lib/models/docterm.py` 
+Class name: `DocTermModel`
 
+Collects the data and provides the functionalities needed to build a docterm matrix. 
+The model itself is relatively lightweight and the vocabulary can be filtered using the results from a TagCountsModel before exporting the matrix, making it easier to avoid memory issues.
 
-Viz
----
+#### LDA Topic Modeling
+
+Location: `lib/models/ldatopics.py` 
+Class name: `LdaModel`
+
+Wrapper for SKlearn's LatentDirichletAllocation providing a few useful shortcuts.
+
+#### Cooccurrences
+
+Location: `lib/models/coocs.py` 
+Class name: `CoocsModel`
+
+Counts the cooccurrence between each pair of terms within a specified vocabulary, within given window. 
+For each pair of terms, also logs the reference id (typically a doc-paragraph identifier) of each excerpt in which they are found cooccurring.
+
+#### Lexical categories
+
+Location: `lib/models/lexcats.py` 
+Class name: `LexCatsModel`
+
+From a given lexicon, count how often each word is found in each document (on an individual basis). 
+Also handles the grouping of these counts into different lexical fields or lexical categories.
+
+Visualisation Web App 
+---------------------
 
 ref to template
 
