@@ -1,5 +1,6 @@
 """Util functions to manage command line inputs"""
 from typing import Sequence
+import json
 
 
 def read_validate_input(prompt: str, values: Sequence[str], success_msg: str = None, error_msg: str = None, to_lower: bool = True):
@@ -44,3 +45,16 @@ def read_y_n_input(prompt: str = 'Continue? (y/n): ') -> bool:
     return s[0] == 'y'
 
 
+def load_json(path):
+    with open(path, 'r') as f:
+        return json.load(f)
+
+
+def save_json(path, data):
+    with open(path, 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=4)
+
+
+if __name__ == '__main__':
+    pass
+    # print(Path.cwd())

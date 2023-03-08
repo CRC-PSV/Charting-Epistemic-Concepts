@@ -1,7 +1,7 @@
 Scientific Explanation
 ======================
 
-This repository holds the code 
+This project aims to use the computational analysis of a scientific corpus (the BioMed corpus) as a way to inform philosophical inquiry relative to 
 
  presented in the following publications:
 * lien 1

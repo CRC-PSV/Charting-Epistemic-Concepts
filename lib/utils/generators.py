@@ -1,10 +1,9 @@
 """Generators to cycle through docmodels, and get data based on specific filters and/or properties"""
 
-
+import os
 import pickle
 from typing import Callable, Optional, Iterable
-
-from mempy4.config import DOCMODEL_PATHS_LIST
+from lib.nlp_params import TT_NVA_TAGS
 
 
 def generate_docmodels_from_paths(path_list: Iterable, vocal: bool = True, filter_fct: Optional[Callable] = None):
@@ -33,53 +32,64 @@ def generate_docmodels_from_paths(path_list: Iterable, vocal: bool = True, filte
                 print(f'ERROR! Could not open docmodel at: {path}')
 
 
-def generate_ids_lemmas(path_list, function_name: str, flatten: bool = True, dms_filter_fct: Optional[Callable] = None, tags_filter_fct: Optional[Callable] = None):
-    """Builds on generate_docmodels_from_paths, yields pairs of doc_ids and lemma lists
+def generate_ids_tags(path_list, function_name, flatten=True,
+                      dms_filter_fct: Optional[Callable] = None, tags_filter_fct: Optional[Callable] = None):
+    for dm in generate_docmodels_from_paths(path_list, filter_fct=dms_filter_fct):
+        if flatten:
+            yield dm.get_id(), [tag for tag in getattr(dm, function_name)(flatten=flatten)
+                                if tags_filter_fct is None or tags_filter_fct(tag)]
+        else:
+            for i, para in enumerate(getattr(dm, function_name)(flatten=flatten)):
+                yield f'{dm.get_id()}_{i}', [tag for tag in para if tags_filter_fct is None or tags_filter_fct(tag)]
 
-    For each DocModel, yields the doc id (str) and a list of lemmas (str). The specified function should return a list
-    of tags with a 'lemma' attribute. If flatten, paragraphs will be merged. Else, each paragraph will be yielded
-    individually, and word_list number will be appended to doc id: '{doc id}_{word_list num}'
+
+# Shortcut generators below, based on those defined above but tuned to yield the data used in the analyses
+# dir_path param should always be the path to the folder containing the pickled docmodels (and nothing else)
+
+def generate_all_docmodels(dir_path):
+    """Shortcut to generate all docmodels in a dir. All files must be DocModels"""
+
+    return generate_docmodels_from_paths(dir_path / f for f in os.listdir(dir_path))
 
 
+def generate_ids_abs_tags(dir_path, flatten=True):
+    """Generator yielding (id, [tags]) pairs, for abstract tags.
 
     Args:
-        path_list: List of pickled docmodel paths, see generate_docmodels_from_paths
-        function_name: Name of the docmodel method to call, as a string, e.g. 'get_text_tags' or 'get_text_tags'
-        flatten: Whether to flatten the paragraphs. Will affect yield type (1d or 2d list)
-        dms_filter_fct: Filter function to pass generate_docmodels_from_paths to filter docmodels
-        tags_filter_fct: Filter function taking a Tag object as param and returning a bool. Only lemmas whose tag returns True will be included.
+        dir_path: DocModel dir
+        flatten: Wheter to flatten the paragraphs. If false, will yield paragraphs with id [doc_id]_[para_num]
 
     Returns:
 
     """
 
-    for dm in generate_docmodels_from_paths(path_list, filter_fct=dms_filter_fct):
-        if flatten:
-            yield dm.get_id(), [tag.lemma for tag in getattr(dm, function_name)(flatten=flatten)
-                                if tags_filter_fct is None or tags_filter_fct(tag)]
-        else:
-            for i, para in enumerate(getattr(dm, function_name)(flatten=flatten)):
-                yield f'{dm.get_id()}_{i}', [tag.lemma for tag in para if tags_filter_fct is None or tags_filter_fct(tag)]
+    return generate_ids_tags([dir_path / f for f in os.listdir(dir_path)], 'get_abs_tags', flatten=flatten)
 
 
-def generate_ids_tags(path_list, function_name, flatten=True):
-    for dm in generate_docmodels_from_paths(path_list):
-        if flatten:
-            yield dm.get_id(), getattr(dm, function_name)(flatten=flatten)
-        else:
-            for i, para in enumerate(getattr(dm, function_name)(flatten=flatten)):
-                yield f'{dm.get_id()}_{i}', para
+def generate_ids_text_tags(dir_path, flatten=True):
+    """Generator yielding (id, [tags]) pairs, for text tags.
+
+        Args:
+            dir_path: DocModel dir
+            flatten: Wheter to flatten the paragraphs. If false, will yield paragraphs with id [doc_id]_[para_num]
+
+        Returns:
+
+        """
+
+    return generate_ids_tags([dir_path / f for f in os.listdir(dir_path)], 'get_text_tags', flatten=flatten)
 
 
-def generate_all_docmodels():
-    """Shortcut to generate all docmodels from DOCMODEL_PATHS_LIST"""
+def generate_ids_text_tags_filtered(dir_path, filter_fct, flatten=True):
+    """ Generator yielding (id, [tags]) pairs, for text tags filtered on a specified condition.
 
-    return generate_docmodels_from_paths(DOCMODEL_PATHS_LIST)
+    Args:
+        dir_path:
+        filter_fct: function filtering tags, should take a tag and return a bool
+        flatten:
 
+    """
 
-def generate_all_ids_sentences_tags():
-
-    return generate_ids_tags(DOCMODEL_PATHS_LIST, 'get_text_sentences_tags', flatten=False)
-
+    return generate_ids_tags([dir_path / f for f in os.listdir(dir_path)], 'get_text_tags', flatten=flatten, tags_filter_fct=filter_fct)
 
 
