@@ -1,7 +1,7 @@
 """Config file for Article 1"""
 from pathlib import Path
 
-# Random seed
+# Random seed (set to 2112 to reproduce the original results)
 RND_SEED = 2112
 
 
@@ -27,3 +27,4 @@ LEGACY_DOCTERM_LABELS = DATA_PATH / 'legacy/legacy_docterm_labels.json'
 
 # Other settings
 RANDOM_SEED = 2112
+N_TOPICS = 7

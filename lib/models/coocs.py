@@ -7,8 +7,11 @@ import pickle
 import random
 
 from lib.docmodel import DocModel
+from lib.utils.io_utils import save_json
+
 
 #  TODO update docstrings, added self.tag_attr and changed update() to take [tag] instead of [str]
+
 
 class CoocsModel:
     """Object used to count word cooccurrences across a series of texts.
@@ -56,12 +59,12 @@ class CoocsModel:
         self.pairs = [
             tuple(sorted([w1, w2])) for i, w1 in enumerate(self.vocab) for j, w2 in enumerate(self.vocab[i+1:])
         ]
-        # Keys: (word, word) sorted
-        # values: para, n coocs for each pair. Counts are doubled since registered both for word1 and word2
+        # Keys: (word_a, word_b) tuple. Word pairs are
+        # values: para_id, n coocs for each pair. Counts are doubled since registered both for word1 and word2
         self.refs = defaultdict(Counter)
 
         # Will hold the shuffled ref ids for each coocs. Keys will be term pairs (tuple) and values list of unique ids
-        # Build after undating using .shuffle_refs()
+        # Build after updating with .shuffle_refs()
         self.shuffled_refs = {}
 
     def update(self, doc_id: str, tag_list: Iterable[str],
@@ -137,10 +140,12 @@ class CoocsModel:
 
     def export_ref_samples(self, dm_path, save_path, n_samples=20):
 
+        ref_samples = {}
         for pair, refs in self.shuffled_refs:
             data = [CoocsModel.make_ref_dict(ref, pair, dm_path) for ref in refs[:n_samples]]
-            n = f'{pair[0]}_{pair[1]}'
-        pass
+            pair_name = f'{pair[0]}_{pair[1]}'
+            ref_samples[pair_name] = data
+        save_json(save_path, ref_samples)
 
     def to_pickle(self, path):
         """Pickles the LexCounter object at the specified location."""
