@@ -28,7 +28,7 @@ class DocTermModel:
 
         self.unique_words = {w for w in self.unique_words if filter_fct(w)}
 
-    def as_df(self, log_norm: Optional[bool] = False):
+    def as_df(self, log_norm: bool = False):
         df = pd.DataFrame.from_dict(self.doc_word_counts, orient='index',
                                     columns=self.unique_words, dtype='UInt16').fillna(0)
         if log_norm:

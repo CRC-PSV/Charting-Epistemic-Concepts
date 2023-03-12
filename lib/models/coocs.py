@@ -141,7 +141,7 @@ class CoocsModel:
     def export_ref_samples(self, dm_path, save_path, n_samples=20):
 
         ref_samples = {}
-        for pair, refs in self.shuffled_refs:
+        for pair, refs in self.shuffled_refs.items():
             data = [CoocsModel.make_ref_dict(ref, pair, dm_path) for ref in refs[:n_samples]]
             pair_name = f'{pair[0]}_{pair[1]}'
             ref_samples[pair_name] = data

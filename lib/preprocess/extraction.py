@@ -58,7 +58,7 @@ def extract_and_tag_docmodel_texts(path: Path) -> None:
         # Add token counts as metadata
         dm.make_token_counts()
 
-        dm.save_to_pickle()
+        dm.to_pickle()
         if (i+1) % 10000 == 0: print(f'Processed {i+1} docmodels...')
     print('Done!')
 

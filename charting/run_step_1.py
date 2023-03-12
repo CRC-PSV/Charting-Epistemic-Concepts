@@ -19,15 +19,15 @@ CONFIG_NAME = 'charting_config.py'
 
 
 def step_1_setup():
-    """Prints step info and promps y/n to continue or exit"""
+    """Confirm settings and prompt y/n to proceed/exit"""
 
     print('Starting extraction and preprocessing (step 1)')
     print(f'Make sure file paths and other project settings in {CONFIG_NAME} are set correctly before proceeding.')
-    print(f'') # confirm paths and check if empty
+
     if LEGACY_MODE:
-        print(f'LEGACY_MODE is currently set to {LEGACY_MODE}, document filtering and docterm matrix will rely on loaded data. See dearme for details')
+        print(f'LEGACY_MODE is currently set to {LEGACY_MODE}. See readme for details')
     else:
-        print(f'LEGACY_MODE is currently set to {LEGACY_MODE}, document filtering and docterm matrix will be computed from scratch. See readme for details')
+        print(f'LEGACY_MODE is currently set to {LEGACY_MODE}. See readme for details')
 
     if not read_y_n_input('Continue? (y/n): '):
         print('Cancelling...')
@@ -35,30 +35,35 @@ def step_1_setup():
 
 
 def step_1_extraction():
+    """Build DocModels from raw xml corpus"""
+
     print('Starting extraction step.')
     print('This will create and pickle DocModel objects from the source XML files.')
     create_docmodels_from_xml_corpus(CORPUS_PATH, DOCMODELS_PATH)
 
 
-# TTagging
-# loop over DMs, run TT
 def step_1_tagging():
+    """Update DocModels by extracting and tagging textual content"""
+
     print('Starting tagging step')
-    print('This will read the previously created DocModels, extract the textual contents and generate tags')
+    print('This will load and update DocModels, extracting the textual contents and generating tags')
     extract_and_tag_docmodel_texts(DOCMODELS_PATH)
 
 
-# 150/2k Filtering
-# If legacy, use list, else use len
-def step_1_filtering(legacy: bool):
-    print('Starting filtering step')
+def step_1_filtering(legacy: bool, min_abs_len: int = 150, min_text_len: int = 2000):
+    """Filters DocModels based on abstract/text text length and deletes unwanted files
+
+    If legacy mode is enabled, will filter based on a list of legacy ids instead of textual length
+    """
+
+    print('\nStarting filtering step')
     if legacy:
         print('Using legacy mode, DocModels will be filtered using loaded data')
         legacy_ids = load_json(LEGACY_IDS_PATH)
         filter_fct = lambda x: x.id in legacy_ids
     else:
-        print('NOT using legacy mode, DocModels will be filtered based on the 150/2000 abstract and text words')
-        filter_fct = lambda x: x.abs_words >= 150 and x.text_words >= 2000
+        print('NOT using legacy mode, DocModels will be filtered based on the 150/2000 abstract and text minimum length.')
+        filter_fct = lambda x: x.abs_words >= min_abs_len and x.text_words >= min_text_len
     print('Warning: Filtered DocModels will be deleted!')
     print('Filtering docmodels...')
     files_to_delete = []
@@ -68,11 +73,15 @@ def step_1_filtering(legacy: bool):
     print('Deleting filtered docmodels...')
     for f in files_to_delete:
         os.remove(DOCMODELS_PATH / f)
-    print('Done building working corpus')
     print(f'Deleted {len(files_to_delete)} docmodels, {len(os.listdir(DOCMODELS_PATH))} were kept')
 
 
 def step_1_docterm(legacy: bool):
+    """Builds a docterm matrix based on the DocModels' abstracts
+
+    If legacy mode is enabled, the matrix' rows and columns will be reordered to match the original configuration.
+    """
+
 
     if legacy:
         # Load legacy vocab to reproduce results
@@ -83,6 +92,7 @@ def step_1_docterm(legacy: bool):
             dt.update(doc_id, tags)
 
     else:
+        # TODO use named functions so object can be pickled
         tc = TagCountsModel(update_filter_fct=lambda x: x.pos in TT_NVA_TAGS)
         dt = DocTermModel(update_filter_fct=lambda x: x.pos in TT_NVA_TAGS)
 
@@ -99,14 +109,14 @@ def step_1_docterm(legacy: bool):
         vocab = tc_df.index
 
         # Save TagCountsModel for future reference
-        tc.to_pickle(RESULTS_PATH / 'abstracts_tagcounts_model.p')
+        # tc.to_pickle(RESULTS_PATH / 'abstracts_tagcounts_model.p')
 
 
     # Filter DocTermModel to only keep vocab words before building the dataframe
     dt.filter_words(lambda x: x in vocab)
 
     # Save DocTermModel for future reference
-    dt.to_pickle(RESULTS_PATH / 'abstracts_docterm_model.p')
+    # dt.to_pickle(RESULTS_PATH / 'abstracts_docterm_model.p')
 
     # Build, normalize and save docterm matrix. If legacy, reorder labels to match original configuration
     dt_df = dt.as_df(log_norm=True)
@@ -117,8 +127,10 @@ def step_1_docterm(legacy: bool):
 
 
 def step_1_main():
+
     step_1_setup()
     step_1_extraction()
+    step_1_tagging()
     step_1_filtering(LEGACY_MODE)
     print('Done extracting the data and building the working corpus.')
 
@@ -128,8 +140,8 @@ def step_1_main():
 
 
 if __name__ == '__main__':
-    print(load_json(LEGACY_IDS_PATH)[:5])
-    print(load_json(LEGACY_DOCTERM_LABELS)['index'][:5])
-    print(load_json(LEGACY_DOCTERM_LABELS)['columns'][:5])
-    # step_1_main()
+    #print(load_json(LEGACY_IDS_PATH)[:5])
+    #print(load_json(LEGACY_DOCTERM_LABELS)['index'][:5])
+    #print(load_json(LEGACY_DOCTERM_LABELS)['columns'][:5])
+    step_1_main()
 

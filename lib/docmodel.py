@@ -285,8 +285,8 @@ class DocModel:
         self.abs_tokens = len(self.get_abs_tags(flatten=True))
         self.text_tokens = len(self.get_text_tags(flatten=True))
 
-        self.abs_words = len([t for t in self.get_abs_tags(True) if t.pos in TT_EXCLUDED_TAGS])
-        self.text_words = len([t for t in self.get_text_tags(True) if t.pos in TT_EXCLUDED_TAGS])
+        self.abs_words = len([t for t in self.get_abs_tags(True) if t.pos not in TT_EXCLUDED_TAGS])
+        self.text_words = len([t for t in self.get_text_tags(True) if t.pos not in TT_EXCLUDED_TAGS])
 
     ### work and process methods ###
 
@@ -353,7 +353,8 @@ class DocModel:
             'volume': self.volume,
             'issue': self.issue,
             'page': self.page,
-            'keywords': self.keywords,
+            'citation': self.citation
+            # 'keywords': self.keywords,
             # 'abstract_paras': self.raw_abs_paragraphs,
             # 'text_paras': self.raw_text_paragraphs,
         }

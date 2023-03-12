@@ -1,6 +1,6 @@
 """Util functions to manage command line inputs"""
 from typing import Sequence
-import json
+import json, csv
 
 
 def read_validate_input(prompt: str, values: Sequence[str], success_msg: str = None, error_msg: str = None, to_lower: bool = True):
@@ -53,6 +53,30 @@ def load_json(path):
 def save_json(path, data):
     with open(path, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
+
+
+def make_list_mapping_from_csv_path(csv_path):
+    """Reads a csv and makes a key: [values] mapping
+
+    Adds one entry per row, using the first column as the key and the rest as a value list. Ignores rows with no value
+    in the first column.
+    """
+
+    f = open(csv_path, newline='')
+    d = {n[0]: [n[i + 1] for i in range(len(n) - 1) if n[i + 1] != ''] for n in csv.reader(f)}
+
+    # Remove categories with no associated value
+    d = {cat: words for cat, words in d.items() if len(words) > 0}
+
+    return d
+
+
+def load_csv_values_as_single_list(csv_path, sort_values=True):
+
+    mapping = make_list_mapping_from_csv_path(csv_path)
+    values = list({w for li in mapping.values() for w in li})
+
+    return sorted(values) if sort_values else values
 
 
 if __name__ == '__main__':
