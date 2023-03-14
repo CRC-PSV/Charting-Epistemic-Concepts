@@ -1,7 +1,7 @@
 """"""
 
 from lib.utils.io_utils import read_y_n_input, load_json, load_csv_values_as_single_list
-from charting.charting_config import LEXICON_PATH, DOCMODELS_PATH, RESULTS_PATH, LEGACY_MODE, RND_SEED, LEGACY_IDS_PATH, LEGACY_DOCTERM_LABELS
+from charting.charting_config import LEXICON_PATH, DOCMODELS_PATH, RESULTS_PATH, LEGACY_MODE, RND_SEED, LEGACY_IDS_PATH, LEGACY_DOCTERM_LABELS, COOC_REFS_TERMS
 from lib.nlp_params import TT_NVA_TAGS
 from lib.utils.generators import generate_ids_text_tags_filtered
 from lib.models.coocs import CoocsModel
@@ -11,12 +11,14 @@ from lib.models.coocs import CoocsModel
 # Add lexicon json/csv to ./data
 # Set legacy samples (if needed?)
 
-def step_2_main():
+def step_2_main(window: int = 5):
     """Runs step 2. Pretty straight forward since everything is handled by the CoocsModel"""
 
     # Load lexicon, init and update CoocsModel
+    print('Starting step 2: corpus-wide cooccurrences')
     lexicon = load_csv_values_as_single_list(LEXICON_PATH)
-    cm = CoocsModel(lexicon, window=5, tag_attr='lemma')
+    print(f'Lexicon loaded, cooccurrences will be computed on {len(lexicon)} words with a window of {window}...')
+    cm = CoocsModel(lexicon, window=window, tag_attr='lemma')
     for para_id, tags in generate_ids_text_tags_filtered(DOCMODELS_PATH, filter_fct=lambda x: x.pos in TT_NVA_TAGS, flatten=False):
         cm.update(para_id, tags)
 
@@ -25,14 +27,17 @@ def step_2_main():
     # cm.to_pickle(RESULTS_PATH / 'cooc_model_corpus.p')
     cm_df = cm.as_df()
     cm_df.to_pickle(RESULTS_PATH / 'cooc_df_corpus.p')
-
+    print('Cooccurrences computed, cooc dataframe saved in results directory.')
     # Shuffle, select and save samples
     # Legacy needed?
     #if LEGACY_MODE:
         # Get same samples
     #    pass
     #else:
-    cm.export_ref_samples(DOCMODELS_PATH, RESULTS_PATH / 'coocs_refs.json')
+    print('Compiling text samples...')
+    cm.export_ref_samples(DOCMODELS_PATH, RESULTS_PATH / 'coocs_refs.json', words_to_sample=COOC_REFS_TERMS)
+    print('Cooccurence samples json saved in results directory.')
+    print('Step 2 done!')
 
 
 if __name__ == '__main__':

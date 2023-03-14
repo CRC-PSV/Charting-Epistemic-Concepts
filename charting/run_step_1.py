@@ -49,6 +49,8 @@ def step_1_tagging():
     print('This will load and update DocModels, extracting the textual contents and generating tags')
     extract_and_tag_docmodel_texts(DOCMODELS_PATH)
 
+    # If the TT bug persists, on legacy mode use a mapping to transform the problematic lemmas directly on the DocModels
+
 
 def step_1_filtering(legacy: bool, min_abs_len: int = 150, min_text_len: int = 2000):
     """Filters DocModels based on abstract/text text length and deletes unwanted files
@@ -81,7 +83,6 @@ def step_1_docterm(legacy: bool):
 
     If legacy mode is enabled, the matrix' rows and columns will be reordered to match the original configuration.
     """
-
 
     if legacy:
         # Load legacy vocab to reproduce results
@@ -143,5 +144,6 @@ if __name__ == '__main__':
     #print(load_json(LEGACY_IDS_PATH)[:5])
     #print(load_json(LEGACY_DOCTERM_LABELS)['index'][:5])
     #print(load_json(LEGACY_DOCTERM_LABELS)['columns'][:5])
-    step_1_main()
+    # step_1_main()
+    step_1_docterm(legacy=True)
 

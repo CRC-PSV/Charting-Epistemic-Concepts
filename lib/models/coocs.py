@@ -138,13 +138,18 @@ class CoocsModel:
         else:
             return pd.DataFrame(self.coocs)
 
-    def export_ref_samples(self, dm_path, save_path, n_samples=20):
+    def export_ref_samples(self, dm_path, save_path, n_samples=20, words_to_sample: Optional[list] = None):
+        """Saves cooc samples references as json
+
+        word_to_sample: Optional, if provided, only coocs containing at least one word from the list will be considered
+        """
 
         ref_samples = {}
         for pair, refs in self.shuffled_refs.items():
-            data = [CoocsModel.make_ref_dict(ref, pair, dm_path) for ref in refs[:n_samples]]
-            pair_name = f'{pair[0]}_{pair[1]}'
-            ref_samples[pair_name] = data
+            if words_to_sample is None or any(word in pair for word in words_to_sample):
+                data = [CoocsModel.make_ref_dict(ref, pair, dm_path) for ref in refs[:n_samples]]
+                pair_name = f'{pair[0]}_{pair[1]}'
+                ref_samples[pair_name] = data
         save_json(save_path, ref_samples)
 
     def to_pickle(self, path):
@@ -176,6 +181,7 @@ class CoocsModel:
             'para_num': para_num,
             'tot_paras': len(dm.get_raw_text()),
             'title': dm.title,
+            'collab': dm.collab,
             'source': dm.source,
             'year': dm.year,
             'citation': dm.citation,

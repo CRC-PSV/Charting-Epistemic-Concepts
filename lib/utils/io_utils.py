@@ -45,8 +45,8 @@ def read_y_n_input(prompt: str = 'Continue? (y/n): ') -> bool:
     return s[0] == 'y'
 
 
-def load_json(path):
-    with open(path, 'r') as f:
+def load_json(path, encoding='utf-8'):
+    with open(path, 'r', encoding=encoding) as f:
         return json.load(f)
 
 

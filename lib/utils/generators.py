@@ -6,6 +6,7 @@ from typing import Callable, Optional, Iterable
 from lib.nlp_params import TT_NVA_TAGS
 from lib.docmodel import DocModel
 
+
 def generate_docmodels_from_paths(path_list: Iterable, vocal: bool = True, filter_fct: Optional[Callable] = None):
     """Base generator, yields DocModels based on a list of pickled docmodels paths.
 

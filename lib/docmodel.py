@@ -1,30 +1,29 @@
-"""Defines the DocModel class, used to represent docs.
+"""Defines the DocModel class, used to represent documents.
 
-Running parser.py will make a DocModel object for each doc (xml file) and pickle it.
-These objects hold the metadata and text data for each doc, as to not rely on xml files.
-Use getter functions to access instance variables.
-
-DocModel functions must be adjusted depending on the xml format(s)
+These objects hold the metadata and text data for each documents, so the original corpus files should not be needed once the DocModels are generated.
+All "extract_..." methods were built specifically to work with BioMed XML files, and will need tweeking to work with different source material.
 """
 
 import pickle
 import os
 from treetaggerwrapper import make_tags
-#import itertools
-#from spacy.lang.en import English
+
 
 from lib.nlp_params import TT_EXCLUDED_TAGS
 
 
 class DocModel:
     def __init__(self, origin_file, tree, save_path, save_on_init=True, extract_metadata_on_init=True):
-        # file data
+        # Since the project was iterative by design, the data from each different step is saved to facilitate experimentation
+        # For this reason, the ElementTree object is stored here
+        # However, those are no longer needed after the tagging step and could be deleted to keep the files lighter
+        # To do so, simply update the DocModels and set self.tree to None
         self.tree = tree
         self.origin_file = origin_file
         self.filename = origin_file[:-4] + '.p'
         self.file_path = save_path / self.filename
 
-        # metadata
+        # Metadata
         self.id = origin_file[:-4]
         self.year = None
         self.title = None
@@ -47,11 +46,11 @@ class DocModel:
         self.primary_subjects = None
         self.secondary_subjects = None
 
-        # text
+        # Exracted raw text content
         self.raw_text_paragraphs = None
         self.raw_abs_paragraphs = None
 
-        # tt tags
+        # TreeTagger tags
         self.tt_text_paragraphs = None
         self.tt_abs_paragraphs = None
 
@@ -70,6 +69,8 @@ class DocModel:
             self.to_pickle()
 
     ### Getters ###
+    # Most properties can also be accessed directly (e.g. 'docmodel.id will work the same as docmodel.get_id()')
+
     def get_id(self):
         return self.id
 
@@ -131,6 +132,7 @@ class DocModel:
 
     ### Extractors ###
     # Extractor function to get all the relevant data from the tree object and set the docmodel properties
+
     def extract_id(self):
         try:
             id = self.tree.getroot()[0].text
@@ -226,11 +228,12 @@ class DocModel:
         self.extract_authors()
         self.extract_collab()
         self.extract_keywords()
+        self.extract_citation()
 
-    def extract_citation(self, max_authors=3):
+    def extract_citation(self):
         try:
             self.citation = ' '.join([
-                ', '.join(f"{last_name}, {first_name[:1]}." for last_name, first_name in self.authors[:max_authors]),
+                self.collab,
                 f'({self.year}).',
                 self.title + '.',
                 self.source.title() + ',',
@@ -334,6 +337,27 @@ class DocModel:
     def to_pickle(self, destination=None):
         save_to = destination if destination else self.file_path
         pickle.dump(self, open(save_to, 'wb'))
+
+    def metadata_to_dict(self):
+        return {
+            'id': self.id,
+            'title': self.title,
+            'source': self.source,
+            'doctype': self.doctype,
+            'year': self.year,
+            'issn': self.issn,
+            'authors': self.authors,
+            'collab': self.collab,
+            'doi': self.doi,
+            'url': self.url,
+            'volume': self.volume,
+            'issue': self.issue,
+            'page': self.page,
+            'citation': self.citation
+            # 'keywords': self.keywords,
+            # 'abstract_paras': self.raw_abs_paragraphs,
+            # 'text_paras': self.raw_text_paragraphs,
+        }
 
     def __str__(self):
         return f'DocModel {self.id} - {self.title}'
