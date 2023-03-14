@@ -21,6 +21,8 @@ def generate_docmodels_from_paths(path_list: Iterable, vocal: bool = True, filte
 
     i = 0
     for path in path_list:
+        if path.suffix != '.p':
+            continue
         with open(path, 'rb') as f:
             try:
                 dm = pickle.load(f)

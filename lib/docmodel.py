@@ -390,6 +390,8 @@ class DocModel:
     @classmethod
     def docmodel_generator(cls, path, vocal=True, conditions=None):
         for i, filename in enumerate(os.listdir(path)):
+            if filename.split('.')[1] != 'p':
+                continue
             with open(path / filename, 'rb') as f:
                 try:
                     dm = pickle.load(f)
