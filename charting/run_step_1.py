@@ -144,6 +144,6 @@ if __name__ == '__main__':
     #print(load_json(LEGACY_IDS_PATH)[:5])
     #print(load_json(LEGACY_DOCTERM_LABELS)['index'][:5])
     #print(load_json(LEGACY_DOCTERM_LABELS)['columns'][:5])
-    # step_1_main()
-    step_1_docterm(legacy=True)
+    step_1_main()
+    #step_1_docterm(legacy=True)
 

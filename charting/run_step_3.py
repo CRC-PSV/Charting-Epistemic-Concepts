@@ -90,6 +90,6 @@ def step_3_main():
 
 
 if __name__ == '__main__':
-    #step_3_main()
-    step_3_lda_clusters()
+    step_3_main()
+    #step_3_lda_clusters()
 
