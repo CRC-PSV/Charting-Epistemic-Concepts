@@ -4,6 +4,8 @@
 TRASH_SECTIONS = ['st', 'tbl', 'display-formula', 'fig', 'file', 'suppl',
                   'table', 'abbr', 'abbrgrp', 'sub', 'ext-link', 'sup', 'tblr']
 
+LEGACY_TRASH_SECTIONS = ['st', 'tbl', 'display-formula', 'fig', 'file', 'suppl', 'table']
+
 # Treetagger tags unlisted in doc but found in results
 TT_TAGLIST_UNLISTED = [',', '(', ')', "''", '``', '#']
 

@@ -1,19 +1,20 @@
 from sklearn.cluster import MiniBatchKMeans
 import pandas as pd
 
-from charting.charting_config import LEXICON_PATH, DOCMODELS_PATH, RESULTS_PATH, LEGACY_MODE, RND_SEED, LEGACY_IDS_PATH, LEGACY_DOCTERM_LABELS, N_TOPICS
-from lib.models.lda import LdaModel
-from lib.models.coocs import CoocsModel
-from lib.utils.generators import generate_ids_tags
-from lib.utils.io_utils import load_csv_values_as_single_list
-from lib.nlp_params import TT_NVA_TAGS
+from charting.charting_config import LEXICON_PATH, DOCMODELS_PATH, RESULTS_PATH, RND_SEED
+from charting.lib.models.lda import LdaModel
+from charting.lib.models.coocs import CoocsModel
+from charting.lib.utils.generators import generate_ids_tags
+from charting.lib.utils.io_utils import load_csv_values_as_single_list
+from charting.lib.nlp_params import TT_NVA_TAGS
 
 
 def step_3_lda_clusters():
 
     print('Running LDA topic modeling and Kmeans clustering from the abstracts docterm matrix.')
     # Load docterm
-    dt_df = pd.read_pickle(RESULTS_PATH / 'abstracts_docterm_df.p').fillna(0)
+    dt_df = pd.read_pickle(RESULTS_PATH / 'abstracts_docterm_df.p')
+
     print('DocTerm matrix loaded, proceeding to topic modeling.')
     # create LdaModel: params
     lda_model = LdaModel(
@@ -91,5 +92,4 @@ def step_3_main():
 
 if __name__ == '__main__':
     step_3_main()
-    #step_3_lda_clusters()
 

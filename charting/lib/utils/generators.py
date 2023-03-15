@@ -3,8 +3,6 @@
 import os
 import pickle
 from typing import Callable, Optional, Iterable
-from lib.nlp_params import TT_NVA_TAGS
-from lib.docmodel import DocModel
 
 
 def generate_docmodels_from_paths(path_list: Iterable, vocal: bool = True, filter_fct: Optional[Callable] = None):
@@ -22,6 +20,7 @@ def generate_docmodels_from_paths(path_list: Iterable, vocal: bool = True, filte
     i = 0
     for path in path_list:
         if path.suffix != '.p':
+            print(f'Ignored [{path.name}] due to wrong file extension')
             continue
         with open(path, 'rb') as f:
             try:

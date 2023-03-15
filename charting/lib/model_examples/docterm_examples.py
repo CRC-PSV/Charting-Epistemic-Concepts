@@ -1,6 +1,6 @@
-from lib.utils.examples_tests_utils import generate_test_id_tags
-from lib.models.docterm import DocTermModel
-from lib.utils.test_texts import OFFICE_TEST_SENTENCES
+from charting.lib.utils.examples_tests_utils import generate_test_id_tags
+from charting.lib.models import DocTermModel
+from charting.lib.utils.test_texts import OFFICE_TEST_SENTENCES
 
 
 def docterm_example():

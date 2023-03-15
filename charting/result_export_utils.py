@@ -1,9 +1,13 @@
-"""Various tools to explore or export the data and results"""
-from lib.utils.generators import generate_all_docmodels
-from lib.utils.io_utils import save_json
-from charting.charting_config import DOCMODELS_PATH, DATA_PATH, CORPUS_PATH, CHARTING_PATH, RESULTS_PATH, COOC_REFS_TERMS
+"""Various tools to explore or export the data and results
+
+The _summary functions generate dataframes similar to the tables presented in the publication
+"""
+from charting.lib.utils.generators import generate_all_docmodels
+from charting.lib.utils.io_utils import save_json
+from charting.charting_config import DOCMODELS_PATH, RESULTS_PATH
 
 import pandas as pd
+from pathlib import Path
 
 
 def export_doc_refs_json(save_path):
@@ -69,6 +73,7 @@ def load_doc_topics_df():
 
 
 def load_topic_words_df():
+    #return pd.read_pickle(Path('C:/Users/Sanchez/Desktop/m4data/analysis/lda_old/topic_words_df.p'))
     return pd.read_pickle(RESULTS_PATH / 'topic_words_df.p')
 
 
@@ -100,4 +105,5 @@ if __name__ == '__main__':
     print(cluster_summary())
     print(topic_summary())
     # cooc_summary(COOC_REFS_TERMS)
+    print(pd.read_pickle(Path('C:/Users/Sanchez/Desktop/m4data/analysis/lda_old/topic_words_df.p')).iloc[0].nlargest(10))
     pass

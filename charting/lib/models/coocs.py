@@ -6,8 +6,8 @@ import pandas as pd
 import pickle
 import random
 
-from lib.docmodel import DocModel
-from lib.utils.io_utils import save_json
+from charting.lib.docmodel import DocModel
+from charting.lib.utils.io_utils import save_json
 
 
 #  TODO update docstrings, added self.tag_attr and changed update() to take [tag] instead of [str]

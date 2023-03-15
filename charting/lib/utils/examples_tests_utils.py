@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 from typing import Iterable, Tuple
 import re
 
-from lib.utils.test_texts import OFFICE_TEST_SENTENCES
+from charting.lib.utils.test_texts import OFFICE_TEST_SENTENCES
 
 
 @dataclass

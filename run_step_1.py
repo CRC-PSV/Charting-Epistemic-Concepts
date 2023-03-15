@@ -3,26 +3,22 @@
 import sys
 import os
 
-from lib.utils.io_utils import read_y_n_input, load_json
+from charting.lib.utils.io_utils import read_y_n_input, load_json
 from charting.charting_config import LEGACY_MODE, DOCMODELS_PATH, CORPUS_PATH, RESULTS_PATH, LEGACY_IDS_PATH, LEGACY_DOCTERM_LABELS
-from lib.preprocess.extraction import extract_and_tag_docmodel_texts, create_docmodels_from_xml_corpus
-from lib.utils.generators import generate_all_docmodels, generate_ids_abs_tags
-from lib.nlp_params import TT_NVA_TAGS, SPECIAL_CHARACTERS_BASE
-from lib.models.tagcounts import TagCountsModel
-from lib.models.docterm import DocTermModel
-
-
-CONFIG_NAME = 'charting_config.py'
-
-# TODO
-# All done!?
+from charting.lib.preprocess.extraction import extract_and_tag_docmodel_texts, create_docmodels_from_xml_corpus
+from charting.lib.utils.generators import generate_all_docmodels, generate_ids_abs_tags
+from charting.lib.nlp_params import TT_NVA_TAGS, SPECIAL_CHARACTERS_BASE, TRASH_SECTIONS, LEGACY_TRASH_SECTIONS
+from charting.lib.models.tagcounts import TagCountsModel
+from charting.lib.models.docterm import DocTermModel
 
 
 def step_1_setup():
     """Confirm settings and prompt y/n to proceed/exit"""
 
     print('Starting extraction and preprocessing (step 1)')
-    print(f'Make sure file paths and other project settings in {CONFIG_NAME} are set correctly before proceeding.')
+    print(f'Make sure file paths and other project settings in charting_config.py are set correctly before proceeding.')
+    if len(os.listdir(DOCMODELS_PATH)) > 0:
+        print('WARNING! DocModels directory is NOT empty or might contain hidden files. Proceed at your own risk.')
 
     if LEGACY_MODE:
         print(f'LEGACY_MODE is currently set to {LEGACY_MODE}. See readme for details')
@@ -42,12 +38,13 @@ def step_1_extraction():
     create_docmodels_from_xml_corpus(CORPUS_PATH, DOCMODELS_PATH)
 
 
-def step_1_tagging():
+def step_1_tagging(legacy: bool):
     """Update DocModels by extracting and tagging textual content"""
 
     print('Starting tagging step')
     print('This will load and update DocModels, extracting the textual contents and generating tags')
-    extract_and_tag_docmodel_texts(DOCMODELS_PATH)
+    trash_sections = LEGACY_TRASH_SECTIONS if legacy else TRASH_SECTIONS
+    extract_and_tag_docmodel_texts(DOCMODELS_PATH, trash_sections)
 
     # If the TT bug persists, on legacy mode use a mapping to transform the problematic lemmas directly on the DocModels
 
@@ -131,7 +128,7 @@ def step_1_main():
 
     step_1_setup()
     step_1_extraction()
-    step_1_tagging()
+    step_1_tagging(LEGACY_MODE)
     step_1_filtering(LEGACY_MODE)
     print('Done extracting the data and building the working corpus.')
 
@@ -141,9 +138,4 @@ def step_1_main():
 
 
 if __name__ == '__main__':
-    #print(load_json(LEGACY_IDS_PATH)[:5])
-    #print(load_json(LEGACY_DOCTERM_LABELS)['index'][:5])
-    #print(load_json(LEGACY_DOCTERM_LABELS)['columns'][:5])
     step_1_main()
-    #step_1_docterm(legacy=True)
-

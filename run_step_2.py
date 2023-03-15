@@ -1,15 +1,11 @@
 """"""
 
-from lib.utils.io_utils import read_y_n_input, load_json, load_csv_values_as_single_list
-from charting.charting_config import LEXICON_PATH, DOCMODELS_PATH, RESULTS_PATH, LEGACY_MODE, RND_SEED, LEGACY_IDS_PATH, LEGACY_DOCTERM_LABELS, COOC_REFS_TERMS
-from lib.nlp_params import TT_NVA_TAGS
-from lib.utils.generators import generate_ids_text_tags_filtered
-from lib.models.coocs import CoocsModel
+from charting.lib.utils.io_utils import load_csv_values_as_single_list
+from charting.charting_config import LEXICON_PATH, DOCMODELS_PATH, RESULTS_PATH, RND_SEED, COOC_REFS_TERMS
+from charting.lib.nlp_params import TT_NVA_TAGS
+from charting.lib.utils.generators import generate_ids_text_tags_filtered
+from charting.lib.models.coocs import CoocsModel
 
-
-# TODO
-# Add lexicon json/csv to ./data
-# Set legacy samples (if needed?)
 
 def step_2_main(window: int = 5):
     """Runs step 2. Pretty straight forward since everything is handled by the CoocsModel"""

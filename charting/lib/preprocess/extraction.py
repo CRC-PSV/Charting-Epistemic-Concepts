@@ -4,8 +4,7 @@ import treetaggerwrapper
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
-from lib.docmodel import DocModel
-from lib.nlp_params import TRASH_SECTIONS
+from charting.lib.docmodel import DocModel
 
 
 def create_docmodels_from_xml_corpus(srs_path: Path, save_path: Path, extract_metadata: bool = True) -> None:
@@ -34,7 +33,7 @@ def create_docmodels_from_xml_corpus(srs_path: Path, save_path: Path, extract_me
     print("Save path : {}".format(save_path))
 
 
-def extract_and_tag_docmodel_texts(path: Path) -> None:
+def extract_and_tag_docmodel_texts(path: Path, trash_sections) -> None:
     """Loads and updates all DocModels in a dir by extracting and tagging abstracts and texts.
 
     Should be called after creating DocModels from XMLs to complete the extraction / tokenization / tagging process.
@@ -50,8 +49,8 @@ def extract_and_tag_docmodel_texts(path: Path) -> None:
     tagger = treetaggerwrapper.TreeTagger(TAGLANG='en')
     print(f'Starting to extract and tag texts from docmodels at {path}...')
     for i, dm in enumerate(DocModel.docmodel_generator(path)):
-        dm.extract_abstract(TRASH_SECTIONS)
-        dm.extract_text(TRASH_SECTIONS)
+        dm.extract_abstract(trash_sections)
+        dm.extract_text(trash_sections)
         dm.treetag_abstract(tagger)
         dm.treetag_text(tagger)
 

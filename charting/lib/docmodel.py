@@ -9,7 +9,7 @@ import os
 from treetaggerwrapper import make_tags
 
 
-from lib.nlp_params import TT_EXCLUDED_TAGS
+from charting.lib.nlp_params import TT_EXCLUDED_TAGS
 
 
 class DocModel:
@@ -391,6 +391,7 @@ class DocModel:
     def docmodel_generator(cls, path, vocal=True, conditions=None):
         for i, filename in enumerate(os.listdir(path)):
             if filename.split('.')[1] != 'p':
+                print(f'Ignored [{filename}] due to wrong file extension')
                 continue
             with open(path / filename, 'rb') as f:
                 try:
