@@ -73,7 +73,6 @@ def load_doc_topics_df():
 
 
 def load_topic_words_df():
-    #return pd.read_pickle(Path('C:/Users/Sanchez/Desktop/m4data/analysis/lda_old/topic_words_df.p'))
     return pd.read_pickle(RESULTS_PATH / 'topic_words_df.p')
 
 
@@ -101,9 +100,7 @@ def print_dfs():
 
 if __name__ == '__main__':
     # export_doc_refs_json(RESULTS_PATH / 'corpus_metadata.json')
-    # print_dfs()
     print(cluster_summary())
     print(topic_summary())
     # cooc_summary(COOC_REFS_TERMS)
-    print(pd.read_pickle(Path('C:/Users/Sanchez/Desktop/m4data/analysis/lda_old/topic_words_df.p')).iloc[0].nlargest(10))
     pass
