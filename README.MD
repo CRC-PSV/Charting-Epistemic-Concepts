@@ -17,7 +17,7 @@ We organised the repository to ensure both the reproducibility of the results pr
 
 The three "run_step..." scripts correspond to the 3 main steps described in the methods section of the article, as presented in the diagram below. 
 
-![diagram](charting_diagram.jpg)
+![diagram](charting/charting_diagram.jpg)
 
 The three scripts make use of other core code used across the project and stored in the `/lib` directory. 
 
