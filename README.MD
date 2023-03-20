@@ -91,5 +91,9 @@ Otherwise, the process will be run from scratch, and thoses files will be exclud
 The code used to compute the docterm matrix was refactored before publishing, to improve performance and reusability. While this had no effect on the values themselves, it did change the ordering of the rows and columns within the matrix. This reordering does not change the overall results. Yet, to reproduce the exact same output from the LDA topic modeling, a manual reordering based on the original configuration is required as in `charting/data/legacy/legacy_docterm_labels.json`.
 
 
+Supplementary Information
+------------------
+
+This file includes SI Tables S1, S2, S3 mentionned in the publication
 
 
